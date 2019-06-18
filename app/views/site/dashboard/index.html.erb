@@ -1,3 +1,15 @@
+<div>
+<%= form_tag site_dashboard_index_path, remote: true, method: :get do %>
+  <b>Nome da Cidade</b>
+  <%= text_field_tag :city, "#{params[:city]}", placeholder: "Nome da cidade" %>
+  <%= button_tag "Pesquisar", name: nil, type: "submit" %>
+<% end %>
+</div>
+
+<% if @weather.blank? %>
+<h1>Cidade não encontrada</h1>
+<% else %>
+
 <h1>Weather for <%= @weather.city %></h1>
 
 <table>
@@ -28,3 +40,5 @@
     </tr>
   </tbody>
 </table>
+
+<% end %>
