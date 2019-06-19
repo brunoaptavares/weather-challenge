@@ -1,6 +1,6 @@
 module Site
   class DashboardController < ApplicationController
-    helper Site::DashboardHelper
+    helper WeatherHelper
 
     def index
       @weather = Openweather2.get_weather(city: city_param, units: 'imperial')
