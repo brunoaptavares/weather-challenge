@@ -7,10 +7,16 @@ module Api
     def forecast
       params.require(:city)
 
-      @weather = Openweather2.get_weather(city: params[:city], units: 'imperial')
+      @weather = weather_service.get_weather(params[:city])
       respond_with(@weather)
     rescue => e
       render json: { error: e, message: 'erro ao buscar a previsao' }, status: 500
+    end
+
+    private
+
+    def weather_service
+      @weather_service ||= WeatherService.new
     end
   end
 end

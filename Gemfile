@@ -16,6 +16,7 @@ gem 'jbuilder', '~> 2.5'
 gem 'openweather2'
 gem 'rabl'
 gem 'responders'
+gem 'devise'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -39,4 +40,7 @@ group :test do
   gem 'selenium-webdriver'
   # Easy installation and use of chromedriver to run system tests with Chrome
   gem 'chromedriver-helper'
+  gem 'rspec-collection_matchers'
+  gem 'rspec-its'
+  gem 'rails-controller-testing'
 end
