@@ -12,6 +12,21 @@
 
 <h1>Weather for <%= @weather.city %></h1>
 
+<% if @is_bookmarks %>
+
+  <%= form_tag site_dashboard_remove_to_bookmarks_path, remote: true, method: :post do %>
+    <%= hidden_field_tag 'city', @weather.city %>
+    <%= button_tag "Remove bookmarks", name: nil, type: "submit" %>
+  <% end %>
+
+<% else %>
+  <%= form_tag site_dashboard_add_to_bookmarks_path, remote: true, method: :post do %>
+    <%= hidden_field_tag 'city', @weather.city %>
+    <%= button_tag "Add bookmarks", name: nil, type: "submit" %>
+  <% end %>
+
+<% end %>
+
 <table>
   <tbody>
     <tr>

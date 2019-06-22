@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_21_021737) do
+ActiveRecord::Schema.define(version: 2019_06_21_143008) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
+  enable_extension "plpgsql"
+  enable_extension "uuid-ossp"
+
+  create_table "bookmarks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "city_name"
+    t.bigint "user_id"
+    t.index ["city_name"], name: "index_bookmarks_on_city_name"
+    t.index ["user_id"], name: "index_bookmarks_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -20,9 +32,9 @@ ActiveRecord::Schema.define(version: 2019_06_21_021737) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "name"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "bookmarks", "users"
 end
