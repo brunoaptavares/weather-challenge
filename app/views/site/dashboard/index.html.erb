@@ -6,26 +6,54 @@
 <% end %>
 </div>
 
+<% unless @bookmarks.blank? %>
+<h2>Favoritos</h2>
+  <% @bookmarks.each do |b| %>
+    <%= form_tag site_dashboard_index_path(city: b.city_name), remote: true, method: :get do %>
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            <%= hidden_field_tag 'city', b.city_name %>
+            <%= label_tag 'city', b.city_name %>
+          </td>
+          <td>
+            <%= image_submit_tag image_path("submit.png"), width: "20", height: "20"%>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <% end %>
+  <% end %>
+<% end %>
+
 <% if @weather.blank? %>
 <h1>Cidade não encontrada</h1>
 <% else %>
 
-<h1>Weather for <%= @weather.city %></h1>
+<table>
+  <tr>
+    <td>
+      <h1>Weather for <%= @weather.city %></h1>
+    </td>
+    <td>
+      <% if @is_bookmark %>
 
-<% if @is_bookmarks %>
+        <%= form_tag site_dashboard_remove_to_bookmarks_path, remote: true, method: :post do %>
+          <%= hidden_field_tag 'city', @weather.city %>
+          <%= image_submit_tag image_path("favorite-icon-yes.jpg"), width: "20", height: "20"%>
+        <% end %>
 
-  <%= form_tag site_dashboard_remove_to_bookmarks_path, remote: true, method: :post do %>
-    <%= hidden_field_tag 'city', @weather.city %>
-    <%= button_tag "Remove bookmarks", name: nil, type: "submit" %>
-  <% end %>
+      <% else %>
+        <%= form_tag site_dashboard_add_to_bookmarks_path, remote: true, method: :post do %>
+          <%= hidden_field_tag 'city', @weather.city %>
+          <%= image_submit_tag image_path("favorite-icon-no.png"), width: "20", height: "20"%>
+        <% end %>
 
-<% else %>
-  <%= form_tag site_dashboard_add_to_bookmarks_path, remote: true, method: :post do %>
-    <%= hidden_field_tag 'city', @weather.city %>
-    <%= button_tag "Add bookmarks", name: nil, type: "submit" %>
-  <% end %>
-
-<% end %>
+      <% end %>
+    </td>
+  </tr>
+</table>
 
 <table>
   <tbody>
@@ -57,3 +85,8 @@
 </table>
 
 <% end %>
+
+<br/><br/><br/><br/><br/>
+<li>
+  <%= link_to('Logout', destroy_user_session_path) %>
+</li>

@@ -7,10 +7,13 @@ module Site
     skip_before_action :verify_authenticity_token, raise: false
 
     def index
-      @weather = weather_service.get_weather(city_param)
-      @is_bookmarks = Bookmarks.where(user_id: current_user.id, city_name: city_param).present?
-    rescue
-      @weather
+      @bookmarks = bookmarks_service.find_user_bookmarks(current_user)
+      begin
+        @weather     = weather_service.get_weather(city_param)
+        @is_bookmark = bookmarks_service.is_bookmark?(current_user, city_param)
+      rescue
+        @weather = nil
+      end
     end
 
     def add_to_bookmarks
@@ -26,7 +29,7 @@ module Site
     private
 
     def city_param
-      I18n.transliterate(params[:city] || 'Sao Paulo')
+      I18n.transliterate(params[:city] || 'Sao Paulo').downcase.titleize
     end
 
     def weather_service
