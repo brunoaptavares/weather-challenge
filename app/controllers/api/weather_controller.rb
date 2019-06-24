@@ -8,7 +8,7 @@ module Api
       params.require(:city)
 
       @weather = weather_service.get_weather(params[:city])
-      respond_with(@weather)
+      respond_with(@weather.to_json)
     rescue => e
       render json: { error: e, message: 'erro ao buscar a previsao' }, status: 500
     end

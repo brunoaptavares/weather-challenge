@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe Site::DashboardController, type: :controller do
 
   describe 'GET #index' do
+    login_user
+
     let(:mocked_return) {
       {
         city: "Sao Paulo",
@@ -20,19 +22,17 @@ RSpec.describe Site::DashboardController, type: :controller do
       }
     }
 
-    subject { get :index, params: param }
+    before do
+      allow(Openweather2).to receive(:get_weather).and_return(mocked_return)
+    end
 
     context 'when city param is empty' do
       let(:param) { nil }
 
-      before do
-        expect(Openweather2).to receive(:get_weather).and_return(mocked_return)
-      end
+      it 'responds successfully with http status 200 and default city weather' do
+        get :index, params: param
 
-      it 'return default city weather' do
-        subject
-
-        expect(response.status).to eq 200
+        expect(response).to have_http_status(200)
         expect(response).to render_template('site/dashboard/index')
         expect(assigns(:weather)).to eq mocked_return
       end
@@ -57,12 +57,8 @@ RSpec.describe Site::DashboardController, type: :controller do
         }
       }
 
-      before do
-        expect(Openweather2).to receive(:get_weather).and_return(mocked_return)
-      end
-
-      it 'return default city weather' do
-        subject
+      it 'responds successfully with http status 200 and the city weather' do
+        get :index, params: param
 
         expect(response.status).to eq 200
         expect(response).to render_template('site/dashboard/index')
@@ -77,12 +73,65 @@ RSpec.describe Site::DashboardController, type: :controller do
         allow(Openweather2).to receive(:get_weather).and_raise(StandardError)
       end
 
-      it 'return default city weather' do
-        subject
+      it 'responds with http status 400 and error message' do
+        get :index, params: param
 
-        expect(response.status).to eq 200
+        expect(response.status).to eq 400
         expect(response).to render_template('site/dashboard/index')
         expect(assigns(:weather)).to be_nil
+      end
+    end
+  end
+
+  describe 'POST #add_to_bookmarks' do
+    login_user
+
+    context 'when receive a valid param' do
+      let(:param) { { city: 'Aruja' } }
+
+      before do
+        allow_any_instance_of(BookmarkService).to receive(:create!).and_return(Bookmark.new)
+      end
+
+      it 'responds successfully with http status 302 and redirect to index page' do
+        post :add_to_bookmarks, params: param
+
+        expect(response.status).to eq 302
+        expect(response).to redirect_to(site_dashboard_index_path(param))
+      end
+    end
+  end
+
+  describe 'POST #remove_from_bookmarks' do
+    login_user
+
+    context 'when receive a valid param' do
+      let(:param) { { city: 'Aruja' } }
+
+      before do
+        allow_any_instance_of(BookmarkService).to receive(:create!).and_return(Bookmark.new)
+      end
+
+      it 'responds successfully with http status 302 and redirect to index page' do
+        post :remove_from_bookmarks, params: param
+
+        expect(response.status).to eq 302
+        expect(response).to redirect_to(site_dashboard_index_path(param))
+      end
+    end
+
+    context 'when receive a invalid param' do
+      let(:param) { { city: 'Teste' } }
+
+      before do
+        allow_any_instance_of(BookmarkService).to receive(:create!).and_return(nil)
+      end
+
+      it 'responds successfully with http status 302 and redirect to index page' do
+        post :remove_from_bookmarks, params: param
+
+        expect(response.status).to eq 302
+        expect(response).to redirect_to(site_dashboard_index_path(param))
       end
     end
   end

@@ -39,7 +39,7 @@
     <td>
       <% if @is_bookmark %>
 
-        <%= form_tag site_dashboard_remove_to_bookmarks_path, remote: true, method: :post do %>
+        <%= form_tag site_dashboard_remove_from_bookmarks_path, remote: true, method: :post do %>
           <%= hidden_field_tag 'city', @weather.city %>
           <%= image_submit_tag image_path("favorite-icon-yes.jpg"), width: "20", height: "20"%>
         <% end %>

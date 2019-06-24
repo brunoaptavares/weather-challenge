@@ -1,4 +1,4 @@
-require "i18n"
+require 'i18n'
 
 module Site
   class DashboardController < Site::ApplicationController
@@ -7,22 +7,23 @@ module Site
     skip_before_action :verify_authenticity_token, raise: false
 
     def index
-      @bookmarks = bookmarks_service.find_user_bookmarks(current_user)
+      @bookmarks = bookmark_service.find_user_bookmarks(current_user)
       begin
         @weather     = weather_service.get_weather(city_param)
-        @is_bookmark = bookmarks_service.is_bookmark?(current_user, city_param)
+        @is_bookmark = bookmark_service.is_bookmark?(city_param, current_user.id)
       rescue
         @weather = nil
+        render status: 400
       end
     end
 
     def add_to_bookmarks
-      bookmarks_service.create(params.merge(user_id: current_user.id))
+      bookmark_service.create!(city_param, current_user.id)
       redirect_to site_dashboard_index_path(city: city_param)
     end
 
-    def remove_to_bookmarks
-      Bookmarks.where(user_id: current_user.id, city_name: city_param).first.delete
+    def remove_from_bookmarks
+      bookmark_service.remove_from_bookmarks(city_param, current_user.id)
       redirect_to site_dashboard_index_path(city: city_param)
     end
 
@@ -36,8 +37,8 @@ module Site
       @weather_service ||= WeatherService.new
     end
 
-    def bookmarks_service
-      @bookmarks_service ||= BookmarksService.new
+    def bookmark_service
+      @bookmark_service ||= BookmarkService.new
     end
   end
 end
