@@ -15,5 +15,18 @@ module WeatherChallenge
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
+
+    Rabl.configure do |config|
+      config.include_json_root = false
+      config.include_child_root = false
+    end
+
+    console do
+      begin
+        require 'pry'
+        config.console = Pry
+      rescue LoadError
+      end
+    end
   end
 end
